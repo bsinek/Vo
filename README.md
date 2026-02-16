@@ -2,6 +2,10 @@
 
 A complete AI-powered medical transcription application with a **FastAPI backend** and **Next.js frontend**. This platform processes audio files of medical dictations and returns structured clinical data including transcriptions, SOAP notes, billing codes, and prescriptions.
 
+Devpost: https://devpost.com/software/vo
+
+YouTube Demo: https://www.youtube.com/watch?v=DvakOibwVCo&embeds_referring_euri=https%3A%2F%2Fdevpost.com%2F
+
 ## 🌟 Features
 
 - **🎙️ Real-time Audio Streaming**: Live transcription with WebSocket communication
