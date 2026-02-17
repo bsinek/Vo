@@ -1,172 +1,228 @@
-# ScribeAgent AI - Full-Stack Medical Transcription Platform
+# ScribeAgent AI — Full-Stack Medical Transcription Platform
 
-A complete AI-powered medical transcription application with a **FastAPI backend** and **Next.js frontend**. This platform processes audio files of medical dictations and returns structured clinical data including transcriptions, SOAP notes, billing codes, and prescriptions.
+AI-powered medical transcription system with a FastAPI backend and Next.js frontend.  
+Processes medical dictation audio and returns structured clinical outputs including transcription, SOAP notes, billing codes, prescriptions, and lab orders.
 
-Devpost: https://devpost.com/software/vo
-
+Devpost: https://devpost.com/software/vo  
 YouTube Demo: https://www.youtube.com/watch?v=DvakOibwVCo&embeds_referring_euri=https%3A%2F%2Fdevpost.com%2F
 
-## 🌟 Features
+---
 
-- **🎙️ Real-time Audio Streaming**: Live transcription with WebSocket communication
-- **📁 File Upload**: Traditional audio file processing 
-- **🏥 Medical Intelligence**: Automatic SOAP note generation
-- **💰 Billing Integration**: Real-time ICD-10 code lookup
-- **💊 Prescription Management**: Structured medication extraction
-- **🔬 Lab Orders**: Automated test ordering
-- **⚡ Professional UI**: Medical-themed, responsive interface
+## Overview
 
-## 🚀 Quick Start
+The platform supports both real-time audio streaming and file-based transcription workflows.
 
-### 1. Install Backend Dependencies
+Core capabilities:
+
+- Live audio streaming via WebSocket
+- File upload processing for recorded dictations
+- Structured SOAP note generation
+- ICD-10 billing code lookup
+- Prescription extraction
+- Lab order extraction
+- Web-based UI for interaction
+
+---
+
+## Quick Start
+
+### 1. Install backend dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Start the Backend Server
+### 2. Start backend server
+
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-The API will be available at `http://localhost:8000`
+API will be available at:
 
-### 3. Install Frontend Dependencies
+```
+http://localhost:8000
+```
+
+### 3. Install frontend dependencies
+
 ```bash
 npm install
 ```
 
-### 4. Start the Frontend Server
+### 4. Start frontend server
+
 ```bash
 npm run dev
 ```
 
-The web app will be available at `http://localhost:3000`
+Frontend will be available at:
 
-### 5. Test the Full Application
+```
+http://localhost:3000
+```
 
-**Option 1: Use the Web Interface**
-- Go to `http://localhost:3000`
-- Choose "Real-time Streaming" or "File Upload" mode
-- Test the live transcription or upload an audio file
+---
 
-**Option 2: Test APIs Directly**
+## Testing the Application
 
-Traditional HTTP endpoint:
+### Web interface
+
+- Open `http://localhost:3000`
+- Choose streaming or file upload mode
+- Test live transcription or upload audio
+
+### API tests
+
+HTTP endpoint:
+
 ```bash
 python test_api.py
 ```
 
 WebSocket streaming endpoint:
+
 ```bash
 python test_websocket.py
 ```
 
-## 📡 API Endpoints
+---
 
-### 🔄 WebSocket `/ws/process-visit` (NEW!)
+## API
 
-**Real-time audio streaming endpoint for live transcription**
+### WebSocket `/ws/process-visit`
 
-**Connection:** `ws://localhost:8000/ws/process-visit`
+Real-time streaming endpoint.
 
-**Message Flow:**
-1. **Client → Server:** Binary audio chunks (bytes)
-2. **Server → Client:** Partial transcription updates
-   ```json
-   {
-     "type": "partial_transcript",
-     "text": "Patient is a 34-year-old...",
-     "is_final": false
-   }
-   ```
-3. **Client → Server:** `"END_OF_STREAM"` (text message)
-4. **Server → Client:** Final structured result
-   ```json
-   {
-     "type": "final_result",
-     "data": {
-       "transcription": "Patient is a 34-year-old male presenting with...",
-       "soap_note": "SUBJECTIVE:\n34-year-old male presents with...",
-       "diagnosis": "streptococcal pharyngitis",
-       "billing_code": {
-         "code": "J02.0",
-         "description": "streptococcal pharyngitis"
-       },
-       "prescriptions": [...],
-       "lab_orders": [...]
-     }
-   }
-   ```
+Connection:
+
+```
+ws://localhost:8000/ws/process-visit
+```
+
+Flow:
+
+1. Client sends binary audio chunks  
+2. Server returns partial transcription updates  
+3. Client sends `"END_OF_STREAM"`  
+4. Server returns final structured result  
+
+Example partial response:
+
+```json
+{
+  "type": "partial_transcript",
+  "text": "Patient is a 34-year-old...",
+  "is_final": false
+}
+```
+
+Example final response:
+
+```json
+{
+  "type": "final_result",
+  "data": {
+    "transcription": "...",
+    "soap_note": "...",
+    "diagnosis": "...",
+    "billing_code": {
+      "code": "J02.0",
+      "description": "streptococcal pharyngitis"
+    },
+    "prescriptions": [...],
+    "lab_orders": [...]
+  }
+}
+```
+
+---
 
 ### POST `/api/process-visit`
 
-**Traditional file upload endpoint (fallback)**
+File upload endpoint.
 
-Accepts an audio file upload and returns structured medical data.
+- Method: POST  
+- Content-Type: multipart/form-data  
+- Body: audio file  
 
-**Request:**
-- Method: `POST`
-- Content-Type: `multipart/form-data`
-- Body: Audio file (any format)
+Returns the same structured result as the streaming endpoint.
 
-**Response:** Same structure as WebSocket final result data
+---
 
 ### GET `/`
 
-Health check endpoint that returns a simple status message.
+Health check endpoint.
 
-## 🏗️ Project Structure
+---
+
+## Project Structure
 
 ```
-├── main.py              # Main FastAPI application
-├── requirements.txt     # Python dependencies
+├── main.py
+├── requirements.txt
 ├── data/
-│   └── icd10_codes.csv # ICD-10 billing codes database
-├── test_api.py          # HTTP API testing script
-├── test_websocket.py    # WebSocket streaming test script
-└── README.md           # This file
+│   └── icd10_codes.csv
+├── test_api.py
+├── test_websocket.py
+└── README.md
 ```
 
-## 🔧 Current Implementation
+---
 
-### Mock AI Components
-- **Speech-to-Text**: Returns hardcoded transcription
-- **Entity Extraction**: Extracts diagnosis, medication, dosage, etc.
-- **SOAP Note Generation**: Creates structured clinical notes
+## Implementation Notes
 
-### Real Components
-- **Billing Code Lookup**: Real CSV-based ICD-10 code lookup
-- **File Upload Handling**: Proper multipart/form-data processing
-- **WebSocket Streaming**: Real-time bidirectional communication
-- **Concurrent Processing**: Async audio streaming with concurrent transcription
-- **CORS Support**: Enabled for frontend development
+Current system uses a mix of mock and real components.
 
-## 🚀 Deployment Ready
+Mock components:
 
-This backend is ready for deployment to services like:
-- **Render** (recommended for hackathons)
-- **Google Cloud Run**
-- **Heroku**
-- **AWS Lambda** (with minor modifications)
+- Speech-to-text output
+- Entity extraction
+- SOAP note generation
 
-## 🔄 Next Steps
+Real components:
 
-To integrate real AI services, replace the mock functions in `main.py`:
+- ICD-10 billing code lookup
+- File upload handling
+- WebSocket streaming pipeline
+- Async processing
+- CORS configuration for frontend integration
 
-1. **transcribe_audio_mock()** → OpenAI Whisper API
-2. **extract_entities_mock()** → LLM API call with NER prompt
-3. **generate_soap_note_mock()** → LLM API call with SOAP generation prompt
+---
 
-## 📊 Performance
+## Deployment
 
-- **Response Time**: ~500ms (with mocks)
-- **File Upload**: Supports any audio format
-- **Billing Lookup**: Fast in-memory CSV lookup
-- **CORS**: Configured for frontend development
+Backend can be deployed to:
 
-## 🛡️ Error Handling
+- Render
+- Google Cloud Run
+- Heroku
+- AWS (minor adjustments required)
 
-- File upload validation
-- Graceful CSV loading with fallbacks
-- Billing code lookup with default responses
-- Proper HTTP status codes
+---
+
+## Extending with Real AI Services
+
+Replace mock functions in `main.py`:
+
+- `transcribe_audio_mock()` → speech-to-text API  
+- `extract_entities_mock()` → LLM-based NER pipeline  
+- `generate_soap_note_mock()` → LLM SOAP generation  
+
+---
+
+## Performance
+
+- ~500ms response time using mock pipeline
+- Supports multiple audio formats
+- In-memory ICD-10 lookup
+- Concurrent WebSocket processing
+
+---
+
+## Error Handling
+
+- File validation for uploads
+- CSV loading fallbacks
+- Billing lookup default handling
+- Standard HTTP status codes
